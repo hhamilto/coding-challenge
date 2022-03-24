@@ -55,7 +55,14 @@ function runSolutions(sourceCount) {
         asyncLogSources.push(new LogSource());
       }
       require("./solution/async-sorted-merge")(asyncLogSources, new Printer())
-        .then(resolve)
+        .then(() => {
+          for (let source of asyncLogSources) {
+            if (!source.drained) {
+              return reject(new Error("Not all logs were printed"))
+            }
+          }
+          resolve()
+        })
         .catch(reject);
     });
   });
